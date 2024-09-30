@@ -1,118 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Form</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Registration and Login</title>
 </head>
 <body>
-  <style>
+    <h1>API Test for User Registration and Login</h1>
 
+    <!-- Registration Form -->
+    <h2>Register</h2>
+    <form id="registerForm">
+        <label for="first_name">First Name:</label><br>
+        <input type="text" id="first_name" name="first_name" required><br><br>
 
-body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f2f2f2;
-  margin: 0;
-}
+        <label for="last_name">Last Name:</label><br>
+        <input type="text" id="last_name" name="last_name" required><br><br>
 
-.login-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
 
-label {
-  display: block;
-  margin-bottom: 5px;
-}
+        <label for="company">Company:</label><br>
+        <input type="text" id="company" name="company"><br><br>
 
-input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+        <label for="role">Role:</label><br>
+        <select id="role" name="role">
+            <option value="Employee">Employee</option>
+            <option value="Employer">Employer</option>
+        </select><br><br>
 
-button {
-  padding: 10px 15px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
 
-button:hover {
-  background-color: #45a049;
-}
+        <label for="confirm_password">Confirm Password:</label><br>
+        <input type="password" id="confirm_password" name="confirm_password" required><br><br>
 
-#response {
-  margin-top: 20px;
-  color: red;
-}
-
-    </style>
-  <div class="login-container">
-    <form id="loginForm">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
-      <br>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-      <br>
-      <button type="submit">Log In</button>
+        <button type="submit">Register</button>
     </form>
-    <div id="response"></div>
-  </div>
-  <script >
-    // script.js
 
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-  event.preventDefault(); // Prevent the form from submitting the default way
-  
-  // Get the form data
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  
-  // Create the request payload
-  const payload = {
-    username: username,
-    password: password
-  };
+    <h3 id="registerResponse"></h3>
 
-  // Send the POST request using fetch
-  fetch('', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Handle the response data
-    const responseDiv = document.getElementById('response');
-    if (data.success) {
-      responseDiv.style.color = 'green';
-      responseDiv.textContent = 'Login successful!';
-    } else {
-      responseDiv.textContent = 'Login failed: ' + data.message;
-    }
-  })
-  .catch(error => {
-    // Handle any errors
-    const responseDiv = document.getElementById('response');
-    responseDiv.textContent = 'Error: ' + error.message;
-  });
-});
+    <hr>
 
-  </script>
+    <!-- Login Form -->
+    <h2>Login</h2>
+    <form id="loginForm">
+        <label for="login_email">Email:</label><br>
+        <input type="email" id="login_email" name="email" required><br><br>
+
+        <label for="login_password">Password:</label><br>
+        <input type="password" id="login_password" name="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <h3 id="loginResponse"></h3>
+
+    <script>
+        // API Base URL
+        const API_BASE_URL = "https://illusion-6ga5.onrender.com/api/";  // Replace with your actual API URL
+
+        // Register Form Submission
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const first_name = document.getElementById('first_name').value;
+            const last_name = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+            const company = document.getElementById('company').value || '';  // Optional
+            const role = document.getElementById('role').value;
+            const password = document.getElementById('password').value;
+            const confirm_password = document.getElementById('confirm_password').value;
+
+            fetch(`${API_BASE_URL}/register/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name,
+                    last_name,
+                    email,
+                    company,
+                    role,
+                    password,
+                    confirm_password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    document.getElementById('registerResponse').innerText = 'Registration successful! Token: ' + data.access_token;
+                } else {
+                    document.getElementById('registerResponse').innerText = 'Registration failed: ' + JSON.stringify(data);
+                }
+            })
+            .catch(error => {
+                document.getElementById('registerResponse').innerText = 'Error: ' + error.message;
+            });
+        });
+
+        // Login Form Submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login_email').value;
+            const password = document.getElementById('login_password').value;
+
+            fetch(`${API_BASE_URL}/login/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    document.getElementById('loginResponse').innerText = 'Login successful! Token: ' + data.access_token;
+                } else {
+                    document.getElementById('loginResponse').innerText = 'Login failed: ' + JSON.stringify(data);
+                }
+            })
+            .catch(error => {
+                document.getElementById('loginResponse').innerText = 'Error: ' + error.message;
+            });
+        });
+    </script>
 </body>
 </html>
